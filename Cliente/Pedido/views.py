@@ -7,8 +7,10 @@ from rest_framework import status
 
 import requests
 
-url_base_repartidor = 'http://localhost:8001'
-url_base_restarurante = 'http://localhost:8002'
+host = '192.168.142.145'
+
+url_base_repartidor = 'http://'+host+':8001/'
+url_base_restarurante = 'http://'+host+':8002/'
 
 
 # Create your views here.
@@ -17,16 +19,19 @@ class Pedido(APIView):
 
     def post(self, request):
         cui = request.data['cui']
-        id = request.data['id']
-        return Response({"cui":cui,"id":id}, status=status.HTTP_200_OK)
+        print(url_base_restarurante+'api/v1/pedido')
+        response = requests.post(url_base_restarurante+'api/v1/pedido', json={'cui':cui},verify=False)
+        print("El cliente "+str(cui)+" solicito el pedido: "+str(response.json()['pedido']))
+        return Response({"cui":cui,"pedido":response.json()['pedido']}, status=status.HTTP_200_OK)
 
     def get(self, request):
         params = self.request.query_params
-        status = 0
+        miStatus = 0
         if params['ubicacion'] =='restaurante':
-            response = requests.get(url_base_restarurante)
-            status = response.json()['status']
+            response = requests.get(url_base_restarurante+'api/v1/pedido', params={'cui':params['cui'], 'pedido':params['pedido']})
+            miStatus = response.json()['status']
         elif params['ubicacion'] =='repartidor':
-            response = requests.get(url_base_repartidor)
-            status = response.json()['status']
-        return Response({"status":status}, status=status.HTTP_200_OK)
+            response = requests.get(url_base_repartidor+'api/v1/pedido', params={'cui':params['cui'], 'pedido':params['pedido']})
+            miStatus = response.json()['status']
+        print("El estatus en "+str(params['ubicacion'])+" del pedido "+str(params['pedido'])+ ' es '+str(miStatus))
+        return Response({"status":miStatus}, status=status.HTTP_200_OK)

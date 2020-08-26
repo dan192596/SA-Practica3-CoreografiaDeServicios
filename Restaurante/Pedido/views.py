@@ -9,23 +9,27 @@ import requests
 
 from .models import Pedido
 
-url_base_cliente = 'http://localhost:8000'
-url_base_repartidor = 'http://localhost:8001'
-url_base_restarurante = 'http://localhost:8002'
+host = '192.168.142.145'
+
+url_base_cliente = 'http://'+host+':8000/'
+url_base_repartidor = 'http://'+host+':8001/'
+url_base_restarurante = 'http://'+host+':8002/'
 
 
 # Create your views here.
-class Pedido(APIView):
+class PedidoView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
         cui = request.data['cui']        
-        Pedido.objects.create(cui=cui)
-        return Response(status=status.HTTP_200_OK)
+        miPedido = Pedido.objects.create(cui=cui)
+        print("El restaurante recibio del cliente "+str(cui)+" el pedido "+str(miPedido.id))
+        return Response({"pedido":miPedido.id}, status=status.HTTP_200_OK)
 
     def get(self, request):
         params = self.request.query_params
         cui = params['cui']
         pedido = params['pedido']
         miPedido = Pedido.objects.get(cui=cui, id=pedido)
+        print("Se hizo la consulta del pedido "+str(pedido)+ " y es "+str(miPedido.status))
         return Response({"status":miPedido.status}, status=status.HTTP_200_OK)

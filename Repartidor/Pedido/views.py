@@ -9,19 +9,22 @@ import requests
 
 from .models import Pedido
 
-url_base_cliente = 'http://localhost:8000'
-url_base_repartidor = 'http://localhost:8001'
-url_base_restarurante = 'http://localhost:8002'
+host = '192.168.142.145'
+
+url_base_cliente = 'http://'+host+':8000/'
+url_base_repartidor = 'http://'+host+':8001/'
+url_base_restaurante = 'http://'+host+':8002/'
 
 
 # Create your views here.
-class Pedido(APIView):
+class PedidoView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
         cui = request.data['cui']
         id = request.data['id']
         Pedido.objects.create(cui=cui,pedido=id)
+        print("Se recibio el pedido "+str(id)+" del cliente "+str(cui))
         return Response(status=status.HTTP_200_OK)
 
     def get(self, request):
@@ -29,10 +32,12 @@ class Pedido(APIView):
         cui = params['cui']
         pedido = params['pedido']
         miPedido = Pedido.objects.get(cui=cui, pedido=pedido)
+        print("Se consulto el pedido "+str(pedido)+" del cliente "+str(cui))
         return Response({"status":miPedido.status}, status=status.HTTP_200_OK)
     
-    def patch(self, request, pk):
+    def patch(self, request):
         miPedido = Pedido.objects.get(pedido=request.data['pedido'])
         miPedido.status = request.data['status']
         miPedido.save()
+        print("Se actualizo el estado del pedido "+str(request.data['pedido'])+" a "+str(request.data['status']))
         return Response({"pedido":miPedido.pedido,"status":miPedido.status}, status=status.HTTP_200_OK)

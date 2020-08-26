@@ -25,7 +25,7 @@ SECRET_KEY = '&st-p*_lk(y2^c3f-tm$i+6i3qxj95i*cqx+*g)b-ad$lm3ax)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition

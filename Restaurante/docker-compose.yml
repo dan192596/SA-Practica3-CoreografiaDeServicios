@@ -9,10 +9,10 @@ services:
         - POSTGRES_PASSWORD=postgres
     api:
       build: .
-      command: python manage.py runserver 0.0.0.0:8000
+      command: python manage.py runserver 0.0.0.0:8002
       volumes:
         - .:/code
       ports:
-        - "8002:8000"
+        - "8002:8002"
       depends_on:
         - db
