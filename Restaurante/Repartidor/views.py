@@ -11,9 +11,7 @@ from Pedido.models import Pedido
 
 host = '192.168.142.145'
 
-url_base_cliente = 'http://'+host+':8000/'
-url_base_repartidor = 'http://'+host+':8001/'
-url_base_restarurante = 'http://'+host+':8002/'
+url_base_esb = 'http://'+host+':8004/'
 
 
 # Create your views here.
@@ -21,11 +19,10 @@ class PedidoView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        cui = request.data['cui']
-        pedido = request.data['pedido']
-        miPedido = Pedido.objects.get(cui=cui,id=pedido)
-        response = requests.post(url_base_repartidor+'api/v1/pedido',json={'cui':cui,'id':miPedido.id})
+        miPedido = Pedido.objects.get(cui=request.data['cui'],id=request.data['pedido'])
+        response = requests.post(url_base_esb+'api/v1/repartidor/pedido',json={'cui':request.data['cui'],'id':miPedido.id})
         if response.status_code==200:
             miPedido.status = 1
             miPedido.save()
+            print("El restaurante notifico al repartidor del pedido "+str(miPedido.id))
         return Response(status=response.status_code)
